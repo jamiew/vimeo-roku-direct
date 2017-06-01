@@ -8,7 +8,7 @@ class VimeoFeed
   end
 
   def run
-    next_page = '/me/videos'
+    next_page = '/users/jamiew/videos'
 
     while true
       raw = fetch_results(next_page)
@@ -68,14 +68,17 @@ protected
     videos.map{|v| build_video(v) }
   end
 
-  def build_video(video)
+  def video_id_for(video)
+    video['uri'].gsub('/videos/', '')
+  end
 
+  def build_video(video)
     thumbnail = video['pictures'].select{|v| v['width'] == 960 }
     video_file = video['files'].select{|v| v['type'] == 'video/mp4'}[0]
     # TODO make all files available and let Roku figure it out
 
     {
-      "id": video['uri'],
+      "id": video_id_for(video),
       "title": video['name'],
       "shortDescription": video['description'],
       "thumbnail": thumbnail,
@@ -112,41 +115,29 @@ protected
     }
   end
 
+  # FIXME all fake
   def build_playlists(videos)
+    video_ids = videos.map{|v| video_id_for(v) }
+    fake_playlists_count = 3
+    id_groups = video_ids.each_slice(video_ids.length / fake_playlists_count).to_a
+
     [
       {
-        "name": "sports",
+        "name": "art",
         "itemIds": [
-          "a4d29aebf55e499c968ce02469859637",
-          "7ec4711dc886464fa16001c1962904f8",
-          "37d290e03d894135b07c5e514cbad72d",
-          "decbe34b64ea4ca281dc09997d0f23fd"
+          id_groups[0]
         ]
       },
       {
-        "name": "misc",
+        "name": "technology",
         "itemIds": [
-          "6c9d0951d6d74229afe4adf972b278dd",
-          "7405a8c101ee4c9da312c426e6067044",
-          "5686748268874a57a4ba3debda1619dd",
-          "42137542fa884b97a2a72cb356ae21b9",
-          "69ce40b268fa4766aa1612131aa74898",
-          "2c4e8ea1ad2f4a8d9d244f5dd4cc47b6"
+          id_groups[1]
         ]
       },
       {
-        "name": "short-form",
+        "name": "open-source",
         "itemIds": [
-          "decbe34b64ea4ca281dc09997d0f23fd",
-          "6c9d0951d6d74229afe4adf972b278dd",
-          "7405a8c101ee4c9da312c426e6067044",
-          "5686748268874a57a4ba3debda1619dd",
-          "37d290e03d894135b07c5e514cbad72d",
-          "42137542fa884b97a2a72cb356ae21b9",
-          "7ec4711dc886464fa16001c1962904f8",
-          "a4d29aebf55e499c968ce02469859637",
-          "69ce40b268fa4766aa1612131aa74898",
-          "2c4e8ea1ad2f4a8d9d244f5dd4cc47b6"
+          id_groups[3]
         ]
       }
     ]
@@ -155,18 +146,18 @@ protected
   def build_categories(videos)
     [
       {
-        "name": "Roku Recommends",
-        "playlistName": "short-form",
+        "name": "Art",
+        "playlistName": "art",
         "order": "manual"
       },
       {
-        "name": "Sports & Gaming",
-        "playlistName": "sports",
+        "name": "Technology",
+        "playlistName": "technology",
         "order": "manual"
       },
       {
-        "name": "Miscellaneous",
-        "playlistName": "misc",
+        "name": "Open-Source",
+        "playlistName": "open-source",
         "order": "manual"
       }
     ]
@@ -180,7 +171,6 @@ protected
   end
 
   def parse_videos(raw)
-
     # pp raw
     data = raw['data']
     return if data.nil?
