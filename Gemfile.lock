@@ -16,6 +16,7 @@ GEM
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
+    redis (3.3.3)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -28,8 +29,9 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  redis
   sinatra
   vimeo_me2!
 
 BUNDLED WITH
-   1.14.6
+   1.15.0

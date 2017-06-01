@@ -1,4 +1,5 @@
 require 'vimeo_me2'
+require 'redis'
 
 class VimeoFeed
 
@@ -8,26 +9,49 @@ class VimeoFeed
 
   def run
     next_page = '/me/videos'
+
     while true
       raw = fetch_results(next_page)
       break if raw.nil? || raw['data'].nil?
       @videos += parse_videos(raw)
       next_page = raw['paging']['next']
-      break if ENV['TEST']
+      break if next_page.nil? || next_page.empty?
     end
 
     puts "Found #{@videos.length} videos total"
-    save_response(@videos) if ENV['TEST']
     return build_output(@videos).to_json
   end
 
+  def run_and_save
+    output = self.run
+    self.data = output
+    output
+  end
+
+  def data
+    redis.get(redis_cache_key)
+  end
+
+  def data=(raw)
+    redis.set(redis_cache_key, raw)
+  end
+
+
 protected
 
-  def save_response(videos)
-    filename = 'vimeo-response.json'
-    File.open(filename, 'w+') {|f| f.write(videos.to_json) }
-    puts "Saved Vimeo API respones to #{filename}"
+  def redis_connection_url
+    ENV['REDIS_URL'] || "redis://localhost:6379"
   end
+
+  def redis
+    @redis ||= Redis.new(url: redis_connection_url)
+    # TODO raise error if no redis
+  end
+
+  def redis_cache_key
+    "vimeo-feed.json"
+  end
+
 
   def build_output(videos)
     {
