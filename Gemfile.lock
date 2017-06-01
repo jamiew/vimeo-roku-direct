@@ -1,25 +1,24 @@
+GIT
+  remote: https://github.com/jamiew/vimeo_me2/
+  revision: 31efd0d3daef9fe5c6238633085b1c090197f616
+  specs:
+    vimeo_me2 (1.1.2)
+      httparty (~> 0.14.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
+    dotenv (2.0.1)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
-    httpclient (2.8.3)
-    json (2.1.0)
     multi_xml (0.6.0)
-    multipart-post (2.0.0)
-    oauth (0.5.1)
-    vimeo (1.5.4)
-      httparty (>= 0.4.5)
-      httpclient (>= 2.1.5.2)
-      json (>= 1.1.9)
-      multipart-post (>= 1.0.1)
-      oauth (>= 0.4.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  vimeo
+  dotenv
+  vimeo_me2!
 
 BUNDLED WITH
    1.14.6
