@@ -1,5 +1,7 @@
 require 'vimeo_me2'
 require 'redis'
+require 'time'
+require 'pp'
 
 class VimeoFeed
 
@@ -57,7 +59,7 @@ protected
     {
       'providerName' => 'FAT Lab',
       'language' => 'en-US',
-      'lastUpdated' => Time.now, # FIXME: 2016-10-06T18:12:32.125Z
+      'lastUpdated' => Time.now.iso8601,
       'shortFormVideos' => build_videos(videos),
       'playlists' => build_playlists(videos),
       'categories' => build_categories(videos),
@@ -72,16 +74,68 @@ protected
     video['uri'].gsub('/videos/', '')
   end
 
+  def format_video_file_for_roku(file)
+    pp file
+
+    if file['quality'] == 'hls'
+      file['width'] = 1920 # just assume it's 1080p; FIXME grab highest rest MP4 and use that
+    end
+
+    quality = if file['width'] > 1920
+      'UHD'
+    elsif file['width'] == 1920
+      'FHD'
+    elsif file['quality'] == 'hd'
+      'HD'
+    else
+      'SD'
+    end
+
+    video_type = if file['quality'] == 'hls'
+      'HLS'
+    else
+      'MP4'
+    end
+
+    # totally guessing at bitrate for these files
+    bitrate = if file['quality'] == 'hls'
+      nil
+    elsif file['width'] >= 1920
+      7000
+    elsif file['width'] >= 1280
+      5000
+    elsif file['width'] >= 640
+      3000
+    elsif file['width'] >= 480
+      2000
+    else
+      1000 # ???
+    end
+
+    out = {
+      'url' => file['link_secure'],
+      'quality' => quality,
+      'videoType' => video_type
+    }
+    out['bitrate'] = bitrate unless bitrate.nil?
+    out
+  end
+
   def build_video(video)
-    thumbnail = video['pictures'].select{|v| v['width'] == 960 }
+    thumbnail = video['pictures'].select{|v| v['width'] == 960 }[0]
+    if thumbnail.nil? || thumbnail['link'].nil?
+      puts "Could not find 960 width thumbnail for #{video.inspect}, falling back to whatever else is there"
+      thumbnail = video['pictures'][0]
+    end
+
     video_file = video['files'].select{|v| v['type'] == 'video/mp4'}[0]
     # TODO make all files available and let Roku figure it out
 
     {
       "id": video_id_for(video),
       "title": video['name'],
-      "shortDescription": video['description'],
-      "thumbnail": thumbnail,
+      "shortDescription": video['description'] || 'N/A',
+      "thumbnail": thumbnail['link'],
       "genres": [
         # "gaming",
         # "technology"
@@ -93,24 +147,16 @@ protected
         # "twitch",
         # "technology"
       ],
-      "releaseDate": video['release_time'], # FIXME does this have to be a date?
+      "releaseDate": Date.parse(video['release_time']).iso8601,
       "content": {
-        "dateAdded": video['created_time'],  # FIXME is the time formatted correctly?
+        "dateAdded": Time.parse(video['created_time']).iso8601,  # FIXME is the time formatted correctly?
         "captions": [],
         "duration": video['duration'],
         "adBreaks": [
           "00:00:00",
           # "00:00:53"
         ],
-        "videos": [
-          # TODO load all the filetypes, both Mp4 and HLS (right?)
-          {
-            # "url": "http://roku.cpl.delvenetworks.com/media/59021fabe3b645968e382ac726cd6c7b/decbe34b64ea4ca281dc09997d0f23fd/aac0cfc54ae74fdfbb3ba9a2ef4c7080/117_segment_2_twitch__nw_060515.mp4",
-            "url": video_file['link_secure'],
-            "quality": "HD",
-            "videoType": "MP4"
-          }
-        ]
+        "videos": video['files'].map{|v| format_video_file_for_roku(v) }
       }
     }
   end
@@ -171,7 +217,6 @@ protected
   end
 
   def parse_videos(raw)
-    # pp raw
     data = raw['data']
     return if data.nil?
     puts "Found #{data.length} videos on this page"
