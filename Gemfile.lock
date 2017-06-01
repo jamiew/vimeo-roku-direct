@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/jamiew/vimeo_me2/
-  revision: 31efd0d3daef9fe5c6238633085b1c090197f616
+  revision: 539e59ca2235227b09b9ee9f80b94f40fc4d1f34
   specs:
     vimeo_me2 (1.1.2)
       httparty (~> 0.14.0)
@@ -8,16 +8,27 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    dotenv (2.0.1)
+    dotenv (2.2.1)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
     multi_xml (0.6.0)
+    mustermann (1.0.0)
+    rack (2.0.3)
+    rack-protection (2.0.0)
+      rack
+    sinatra (2.0.0)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.0)
+      tilt (~> 2.0)
+    tilt (2.0.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dotenv
+  sinatra
   vimeo_me2!
 
 BUNDLED WITH
