@@ -1,10 +1,15 @@
 require './vimeo-feed'
+require 'pp'
 require 'dotenv'
+
 Dotenv.load
 
-puts "Starting..."
+puts "Running..."
 
-VimeoFeed.new
+output = VimeoFeed.new.run
 
-puts "Done"
+filename = 'feeds/vimeo.json'
+File.open(filename, 'w+') {|f| f.write(output) }
+
+puts "Wrote #{output.length} bytes to #{filename}"
 

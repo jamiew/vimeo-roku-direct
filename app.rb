@@ -5,8 +5,12 @@ class App < Sinatra::Base
 
   get '/' do
     content_type :json
-    # VimeoFeed.new
-    File.read('example-feed.json')
+    File.read('feeds/vimeo.json')
+  end
+
+  get '/example.json' do
+    content_type :json
+    File.read('feeds/example.json')
   end
 
 end
