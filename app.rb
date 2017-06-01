@@ -26,6 +26,10 @@ class App < Sinatra::Base
     output
   end
 
+  get '/update' do
+    VimeoFeed.new.run_and_save
+  end
+
   get '/example.json' do
     content_type :json
     File.read('feeds/example.json')
