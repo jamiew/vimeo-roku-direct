@@ -169,19 +169,19 @@ protected
 
     [
       {
-        "name": "art",
+        "name": "first",
         "itemIds": [
           id_groups[0]
         ]
       },
       {
-        "name": "technology",
+        "name": "second",
         "itemIds": [
           id_groups[1]
         ]
       },
       {
-        "name": "open-source",
+        "name": "third",
         "itemIds": [
           id_groups[3]
         ]
@@ -192,18 +192,18 @@ protected
   def build_categories(videos)
     [
       {
-        "name": "Art",
-        "playlistName": "art",
+        "name": "First",
+        "playlistName": "first",
         "order": "manual"
       },
       {
-        "name": "Technology",
-        "playlistName": "technology",
+        "name": "Second",
+        "playlistName": "second",
         "order": "manual"
       },
       {
-        "name": "Open-Source",
-        "playlistName": "open-source",
+        "name": "third",
+        "playlistName": "third",
         "order": "manual"
       }
     ]
