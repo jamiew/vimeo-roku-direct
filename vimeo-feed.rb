@@ -7,10 +7,11 @@ class VimeoFeed
 
   def initialize
     @videos = []
+    @username = 'jamiew'
   end
 
   def run
-    next_page = '/users/jamiew/videos'
+    next_page = "/users/#{@username}/videos"
 
     while true
       raw = fetch_results(next_page)
@@ -57,7 +58,7 @@ protected
 
   def build_output(videos)
     {
-      'providerName' => 'FAT Lab',
+      'providerName' => "vimeo.com/#{@username}",
       'language' => 'en-US',
       'lastUpdated' => Time.now.iso8601,
       'shortFormVideos' => build_videos(videos),
