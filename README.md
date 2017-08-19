@@ -1,7 +1,7 @@
 Vimeo Roku Feed
 ===============
 
-*Work In Progress, proceed at your own risk.* Pull requests welcome.
+*Work In Progress, proceed at your own risk. Pull requests welcome.*
 
 Instantly publish a Roku app powered by your Vimeo channel.
 
@@ -19,22 +19,36 @@ Setup
 bundle install
 ```
 
+* Get a Vimeo access token on https://developer.vimeo.com (make an app, then make an access token on the 'Authentication' tab)
 * Copy `.env.sample` to `.env.`
-* Get a Vimeo access token on https://developer.vimeo.com and put it in `.env`
+* Put your VIMEO_ACCESS_TOKEN in `.env`
 
 Usage
 -----
 
-* Fetch your Vimeo videos: `bundle exec ruby vimeo-feed.rb`. This generates a Roku-compatible feed and saves it to disk.
-* Run the web server: `bundle exec rackup config.ru` (or `foreman start`)
+* Fetch your Vimeo videos. This command generates a Roku-compatible feed and saves it to disk:
 
-Then fetch and upate your feed on a regular basis.
+```
+bundle exec ruby update-feed.rb
+```
+
+Or run it as a web server:
+
+```
+foreman start
+```
+
+If you don't have foreman installed:
+
+```
+bundle exec rackup config.ru
+```
 
 TODO
 ----
 
 * Make feed updates easier, or automated in a foreman worker process
-* Heroku deployment instructions
+* Heroku deployment instruction
 * Tests tests tests tests
 
 Contributors
