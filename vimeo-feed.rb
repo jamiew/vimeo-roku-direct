@@ -237,7 +237,7 @@ end
 "duration",
 "width",
 "language",
-"height",                                                                                                                        [0/9184]
+"height",
 "embed",
 "created_time",
 "modified_time",
